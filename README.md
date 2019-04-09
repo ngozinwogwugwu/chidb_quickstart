@@ -37,7 +37,7 @@ To start the chidb shell, run this command:
 use `crtl-c` to exit the chidb shell. If you want to exit the container (your state should be saved), type in `exit`. If you want to restart it again later on, run the following commands:
 ``` bash
 docker container ls # to get the container ID
-docker start -a ###CONTAINER_ID###
+docker attach ###CONTAINER_ID###
 ```
 
 ## Install check (unfinished)
