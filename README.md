@@ -2,6 +2,8 @@
 Use this as a quickstart for chidb if you want to spin up a docker container. It should take care of everything on the [chidb installation page](http://chi.cs.uchicago.edu/chidb/installing.html)
 
 ## get started:
+Clone this repo and use your terminal to navigate to the chidb_quickstart directory
+
 Use this command to spin up a dockerfile
 ``` bash
 docker build -t chidb_quickstart . && docker container run -it chidb_quickstart /bin/sh
