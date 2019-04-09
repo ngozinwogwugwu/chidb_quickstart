@@ -11,14 +11,13 @@ RUN apk add --no-cache \
   gcc \
   alpine-sdk \
   ncurses-dev \
+  texinfo \
 && wget 'http://thrysoee.dk/editline/libedit-20190324-3.1.tar.gz' \
 && tar xvf libedit-20190324-3.1.tar.gz \
 && rm libedit-20190324-3.1.tar.gz
 
 WORKDIR /app
 ADD . /app
-
-# RUN wget 'git@github.com:uchicago-cs/chidb.git'
 
 RUN sh install_dependencies
 

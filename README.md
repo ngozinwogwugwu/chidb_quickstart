@@ -26,8 +26,21 @@ cd chidb/
 make
 ```
 
-## All set!
 To start the chidb shell, run this command:
 ``` bash
 ./chidb
+```
+use `crtl-c` to get out of there
+
+## Install check
+Use check for automated tests
+- [from the check documentation](https://libcheck.github.io/check/web/install.html#linuxsource)
+``` bash
+git clone https://github.com/libcheck/check.git
+cd check/
+autoreconf --install
+./configure
+make
+make check
+make install
 ```
