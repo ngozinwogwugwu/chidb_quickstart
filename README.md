@@ -37,6 +37,11 @@ use `crtl-c` to get out of there
 ## Install check (unfinished)
 Use check for automated tests
 - [from the check documentation](https://libcheck.github.io/check/web/install.html#linuxsource)
+
+TODO: find a way to install:
+- tetex-bin (or any texinfo-compatible TeX installation, for documentation)
+- POSIX sed
+
 ``` bash
 git clone https://github.com/libcheck/check.git
 cd check/
