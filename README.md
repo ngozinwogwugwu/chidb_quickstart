@@ -32,7 +32,17 @@ To start the chidb shell, run this command:
 ``` bash
 ./chidb
 ```
-use `crtl-c` to get out of there
+use `crtl-c` to exit the chidb shell. If you want to exit the container (your state should be saved), type in `exit`. If you want to restart it again later on, run the following commands:
+``` bash
+docker ps -a # to get the container ID
+docker start -a ###CONTAINER_ID###
+```
+
+if you ever want to remove it forever, run the following commands:
+``` bash
+docker ps -a # to get the container ID
+docker rm ###CONTAINER_ID###
+```
 
 ## Install check (unfinished)
 Use check for automated tests
