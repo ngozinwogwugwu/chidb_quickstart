@@ -34,14 +34,8 @@ To start the chidb shell, run this command:
 ```
 use `crtl-c` to exit the chidb shell. If you want to exit the container (your state should be saved), type in `exit`. If you want to restart it again later on, run the following commands:
 ``` bash
-docker ps -a # to get the container ID
+docker container ls # to get the container ID
 docker start -a ###CONTAINER_ID###
-```
-
-if you ever want to _**remove it forever**_ (maybe after you're done with the course), run the following commands:
-``` bash
-docker ps -a # to get the container ID
-docker rm ###CONTAINER_ID###
 ```
 
 ## Install check (unfinished)
@@ -60,4 +54,19 @@ autoreconf --install
 make
 make check
 make install
+```
+
+## Eventual Cleanup
+If you ever want to remove the docker container/image you just created (This will remove them *forever*, so you might want to wait until after you're done with the course), take the following steps:
+
+1. Remove the container
+``` bash
+docker container ls -a # to get the container ID
+docker container rm ###CONTAINER_ID###
+```
+
+2. Remove the image
+``` bash
+docker image ls# to get the image ID
+docker image rm ###IMAGE_ID###
 ```
