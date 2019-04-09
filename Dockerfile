@@ -18,7 +18,7 @@ RUN apk add --no-cache \
 WORKDIR /app
 ADD . /app
 
-RUN git clone git@github.com:uchicago-cs/chidb.git
+# RUN wget 'git@github.com:uchicago-cs/chidb.git'
 
 RUN sh install_dependencies
 
