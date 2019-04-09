@@ -6,7 +6,10 @@ Clone this repo and use your terminal to navigate to the chidb_quickstart direct
 
 Use this command to spin up a dockerfile
 ``` bash
-docker build -t chidb_quickstart . && docker container run -it chidb_quickstart /bin/sh
+git clone https://github.com/uchicago-cs/chidb.git
+docker build -t chidb_quickstart .
+docker container run -it chidb_quickstart /bin/sh
+docker run -d -it --name chidb_sandbox --mount type=bind,source="$(pwd)"/chidb,target=/app/chidb chidb_quickstart
 ```
 Great. Now you have a container with:
 - automake
@@ -16,8 +19,9 @@ Great. Now you have a container with:
 - lex
 - yacc
 - editline library, including the header files.
+- texinfo (needed for later on)
 
-It should also install `texinfo`, which is needed for check later on.
+You also have a **chidb** bind mount. Any change you make on your host machine will be reflected in your container, and vice versa.
 
 ## The next step is to build chidb
 you should be seeing `/app #` as a prompt, which means you're inside the chidb_quickstart docker container.
@@ -36,8 +40,7 @@ To start the chidb shell, run this command:
 ```
 use `crtl-c` to exit the chidb shell. If you want to exit the container (your state should be saved), type in `exit`. If you want to restart it again later on, run the following commands:
 ``` bash
-docker container ls # to get the container ID
-docker attach ###CONTAINER_ID###
+docker attach chidb_sandbox
 ```
 
 ## Install check (unfinished)
@@ -63,8 +66,7 @@ If you ever want to remove the docker container/image you just created (This wil
 
 1. Remove the container
 ``` bash
-docker container ls -a # to get the container ID
-docker container rm ###CONTAINER_ID###
+docker container rm chidb_sandbox
 ```
 
 2. Remove the image
