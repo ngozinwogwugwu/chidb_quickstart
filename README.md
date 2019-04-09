@@ -38,7 +38,7 @@ docker ps -a # to get the container ID
 docker start -a ###CONTAINER_ID###
 ```
 
-if you ever want to remove it forever, run the following commands:
+if you ever want to _remove it forever_ (maybe after you're done with the course), run the following commands:
 ``` bash
 docker ps -a # to get the container ID
 docker rm ###CONTAINER_ID###
