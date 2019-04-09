@@ -32,7 +32,7 @@ To start the chidb shell, run this command:
 ```
 use `crtl-c` to get out of there
 
-## Install check
+## Install check (unfinished)
 Use check for automated tests
 - [from the check documentation](https://libcheck.github.io/check/web/install.html#linuxsource)
 ``` bash
