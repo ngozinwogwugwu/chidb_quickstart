@@ -8,8 +8,8 @@ Use this command to spin up a dockerfile
 ``` bash
 git clone https://github.com/uchicago-cs/chidb.git
 docker build -t chidb_quickstart .
-docker container run -it chidb_quickstart /bin/sh
 docker run -d -it --name chidb_sandbox --mount type=bind,source="$(pwd)"/chidb,target=/app/chidb chidb_quickstart
+docker container run -it chidb_quickstart /bin/sh
 ```
 Great. Now you have a container with:
 - automake
