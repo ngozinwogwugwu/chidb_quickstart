@@ -6,6 +6,7 @@ RUN apk add --no-cache \
   autoconf \
   libtool \
   check \
+  vim \
   check-dev \
   bison flex \
   gcc \
