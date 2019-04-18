@@ -65,6 +65,17 @@ bash-4.4# hexdump -C tests/files/generated/btree-test-1a-1.dat
 00000410  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  |................|
 ```
 
+
+for the first 16 bytes of data:
+```bash
+hexdump -C -n 16 tests/files/generated/btree-test-1a-3.dat
+```
+for the next (offset by 16) two bytes of data, as a decimal
+``` bash
+hexdump -d -s 16 -n 2 tests/files/generated/btree-test-1a-1.dat
+```
+
+
 ## gdb
 I'll become more effective if I use a debugger, so more to come here.
 
