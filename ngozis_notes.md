@@ -38,6 +38,46 @@ This test file might answer a few questions, like:
 - what's the default page size
 - I'm new/rusty when it comes to C. How do I need to organize this data?
 
+The directions for these tests can be found on [chidb's test page](http://chi.cs.uchicago.edu/chidb/testing.html#automated-tests), and you must be in the chidb directory for the tests to do anything. For instance:
+``` bash
+cd chidb
+CK_RUN_CASE="Step 1a: Opening an existing chidb file" make check
+```
+should print out something like
+``` bash
+make --no-print-directory check-am
+make --no-print-directory tests/check_btree tests/check_dbrecord tests/check_dbm tests/check_pager tests/check_utils
+make[2]: 'tests/check_btree' is up to date.
+make[2]: 'tests/check_dbrecord' is up to date.
+make[2]: 'tests/check_dbm' is up to date.
+make[2]: 'tests/check_pager' is up to date.
+make[2]: 'tests/check_utils' is up to date.
+make --no-print-directory check-TESTS
+FAIL: tests/check_btree
+PASS: tests/check_dbrecord
+PASS: tests/check_dbm
+PASS: tests/check_pager
+PASS: tests/check_utils
+============================================================================
+Testsuite summary for chidb 1.0
+============================================================================
+# TOTAL: 5
+# PASS:  4
+# SKIP:  0
+# XFAIL: 0
+# FAIL:  1
+# XPASS: 0
+# ERROR: 0
+============================================================================
+See ./test-suite.log
+Please report to do-not-email@example.org
+============================================================================
+make[3]: *** [Makefile:1692: test-suite.log] Error 1
+make[2]: *** [Makefile:1800: check-TESTS] Error 2
+make[1]: *** [Makefile:2032: check-am] Error 2
+make: *** [Makefile:2034: check] Error 2
+```
+Now it's your job to fill in the code and make the tests pass
 
 ## Handy built-in utilities
 The course didn't mention this, but the [utils file](https://github.com/uchicago-cs/chidb/blob/master/src/libchidb/util.c) is already full of handy functions.
@@ -77,6 +117,21 @@ hexdump -d -s 16 -n 2 tests/files/generated/btree-test-1a-1.dat
 
 
 ## gdb
-I'll become more effective if I use a debugger, so more to come here.
+I'll become more effective if I use a debugger, so let's install it using [this gdb tutorial](http://www.gdbtutorial.com/tutorial/how-install-gdb):
+``` bash
+# get all the stuff
+apk add gdb
+wget "http://ftp.gnu.org/gnu/gdb/gdb-7.11.tar.gz"
+tar -xvzf gdb-7.11.tar.gz
+
+# configure, make, install
+cd gdb-7.11
+./configure
+make
+make install
+
+# check to see if you really have it
+gdb --version
+```
 
 
