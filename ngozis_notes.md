@@ -122,4 +122,33 @@ make install
 gdb --version
 ```
 
+## Workflow
+1. Fire up the docker container. ([instructions here](chidb_quickstart#get-started))
+2. Find files to work on. Right now, its:
+    - /chidb/tests/check_btree_1a.c
+    - /chidb/src/libchidb/btree.c
+    - test-suite.log
+3. Try an automated test:  `CK_RUN_CASE="Step 1a: Opening an existing chidb file" make check`
+4. Try running the database with an example database:
+```bash
+cp tests/files/databases/strings-1btree.sdb ./test_db.dat
+./chidb test_db.dat
+```
+
+## Smaller things to remember
+
+### chidb return codes
+```
+0 - CHIDB_OK
+1 - CHIDB_EINVALIDSQL
+2 - CHIDB_ENOMEM
+3 - CHIDB_ECANTOPEN
+4 - CHIDB_ECORRUPT
+5 - CHIDB_ECONSTRAINT
+6 - CHIDB_EMISMATCH
+7 - CHIDB_EIO
+8 - CHIDB_EMISUSE
+100 - CHIDB_ROW
+101 - CHIDB_DONE
+```
 

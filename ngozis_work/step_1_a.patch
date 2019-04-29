@@ -1,0 +1,198 @@
+commit 82d554a7aad639416f35c47b7f132b464249210e
+Author: Ngozi Nwogwugwu <nwogwugwu.ngozi@gmail.com>
+Date:   Mon Apr 29 14:28:28 2019 -0400
+
+    finished question 1a
+
+diff --git a/src/libchidb/btree.c b/src/libchidb/btree.c
+index 02e6b1a..50a44b8 100644
+--- a/src/libchidb/btree.c
++++ b/src/libchidb/btree.c
+@@ -48,6 +48,11 @@
+ #include <string.h>
+ #include <strings.h>
+ #include <chidb/log.h>
++
++#include <sys/types.h>
++#include <sys/stat.h>
++#include <fcntl.h>
++
+ #include "chidbInt.h"
+ #include "btree.h"
+ #include "record.h"
+@@ -79,11 +84,129 @@
+  */
+ int chidb_Btree_open(const char *filename, chidb *db, BTree **bt)
+ {
+-    /* Your code goes here */
++    // get the file header
++    FILE *file_pointer = chidb_open_file(filename);
++    unsigned char header_bytes[HEADER_SIZE];
++    fread(header_bytes, sizeof(unsigned char), HEADER_SIZE, file_pointer);
++    *bt = malloc(sizeof(BTree));
++
++    if (bt == NULL) return CHIDB_ENOMEM;
++    if (!run_corrupt_header_checks(header_bytes)) return CHIDB_ECORRUPTHEADER;
++
++
++    // get header information
++    uint16_t page_size = get2byte(&header_bytes[PAGE_SIZE_INDEX]);
++    uint32_t file_change_counter = get4byte(&header_bytes[FILE_CHANGE_COUNTER_INDEX]);
++    uint32_t schema_version = get4byte(&header_bytes[SCHEMA_VERSION_INDEX]);
++    uint32_t page_cache_size = get4byte(&header_bytes[PAGE_CACHE_SIZE_INDEX]);
++    uint32_t user_cookie = get4byte(&header_bytes[USER_COOKIE_INDEX]);
++    int n_pages = get_num_pages(filename, page_size);
++
++    if (page_cache_size != INITIALIZED_PAGE_CACHE_SIZE) return CHIDB_ECORRUPTHEADER;
++
++    // make sure that the btree and pager have the right information
++    int pager_open_response = chidb_Pager_open(&(*bt)->pager, filename);
++    if (pager_open_response != CHIDB_OK) {
++        printf("Error: %i\n", pager_open_response);
++        return pager_open_response;
++    }
++    (*bt)->pager->page_size = page_size;
++    (*bt)->pager->n_pages = n_pages;
++
++    printf("file change counter: %i\n", file_change_counter);
++    printf("schema_version: %i\n", schema_version);
++    printf("page_cache_size: %i\n", page_cache_size);
++    printf("user_cookie: %i\n", user_cookie);
++    printf("page size is %i\n", page_size);
++    printf("n_pages is : %i\n", n_pages);
++    fflush(stdout);
+ 
+     return CHIDB_OK;
+ }
+ 
++int get_num_pages(const char *filename, int page_size) {
++    struct stat buffer;
++    int         status;
++
++    status = stat(filename, &buffer);
++    if (status != 0) return -1;
++    
++    int file_size = (int) buffer.st_size;
++    printf("file_size is : %i\n", file_size);
++
++    return (file_size - 1) / page_size;
++}
++
++/* Open a SQLite file
++ *
++ * attempt to open up the file.
++ * TODO: the requested file doesn't exist yet, make one
++ *
++ * Parameters
++ * - filename: Database file (might not exist)
++ * - file_pointer: pointer to the file itself
++ *
++ * Return
++ * file_pointer: a pointer to the opened file
++ *
++ */
++FILE * chidb_open_file(const char *filename)
++{
++    FILE *file_pointer;
++    file_pointer = fopen(filename, "rb"); // rb: Open for reading in binary mode.
++
++    // if the file pointer is null, then the requested file doesn't exist yet
++    if (file_pointer == NULL) {
++        printf("eh!? the file pointer is null!\n");
++        // TODO: create a new file for this name
++    }
++
++    return file_pointer;
++}
++
++// make sure the header title is says "SQLite format 3"
++bool chidb_read_header_title(unsigned char *header_bytes)
++{
++    const char SQLITE_HEADER[] = "SQLite format 3\0";
++    char *title_string = malloc(TITLE_LENGTH * sizeof(char));
++
++    memcpy(title_string, header_bytes, TITLE_LENGTH * sizeof(char));
++    return (strcmp(title_string, SQLITE_HEADER) == 0);
++}
++
++// from this file http://chi.cs.uchicago.edu/chidb/fileformat.html#file-header
++bool run_corrupt_header_checks(unsigned char *header_bytes) {
++    return (
++        chidb_read_header_title(header_bytes) &&
++        check_six_header_bytes(header_bytes) &&
++        (get4byte(&header_bytes[32]) == 0) &&
++        (get4byte(&header_bytes[36]) == 0) &&
++        (get4byte(&header_bytes[44]) == 1) &&
++        (get4byte(&header_bytes[52]) == 0) &&
++        (get4byte(&header_bytes[56]) == 1) &&
++        (get4byte(&header_bytes[64]) == 0)
++    );
++}
++
++// from this file http://chi.cs.uchicago.edu/chidb/fileformat.html#file-header
++bool check_six_header_bytes(unsigned char *header_bytes) {
++    return (
++        check_byte(header_bytes, 18, 0x01) &&
++        check_byte(header_bytes, 19, 0x01) &&
++        check_byte(header_bytes, 20, 0x00) &&
++        check_byte(header_bytes, 21, 0x40) &&
++        check_byte(header_bytes, 22, 0x20) &&
++        check_byte(header_bytes, 23, 0x20)
++    );
++}
++
++bool check_byte(unsigned char *header_bytes, int byte_index, unsigned char correct_byte) {
++    unsigned char byte_to_check = header_bytes[byte_index];
++    return (byte_to_check == correct_byte);
++}
++
++
++
+ 
+ /* Close a B-Tree file
+  *
+diff --git a/src/libchidb/btree.h b/src/libchidb/btree.h
+index 8c01f10..ceaa13c 100644
+--- a/src/libchidb/btree.h
++++ b/src/libchidb/btree.h
+@@ -83,6 +83,16 @@
+ #define INDEXINTCELL_SIZE (16)
+ #define INDEXLEAFCELL_SIZE (12)
+ 
++// Ngozi's constants
++#define HEADER_SIZE (100)
++#define INITIALIZED_PAGE_CACHE_SIZE (20000)
++#define FILE_CHANGE_COUNTER_INDEX (24)
++#define SCHEMA_VERSION_INDEX (40)
++#define PAGE_CACHE_SIZE_INDEX (48)
++#define USER_COOKIE_INDEX (60)
++#define PAGE_SIZE_INDEX (16)
++#define TITLE_LENGTH (16)
++
+ // Advance declarations
+ typedef struct BTreeCell BTreeCell;
+ typedef struct BTreeNode BTreeNode;
+@@ -171,4 +181,12 @@ int chidb_Btree_insertNonFull(BTree *bt, npage_t npage, BTreeCell *btc);
+ int chidb_Btree_split(BTree *bt, npage_t npage_parent, npage_t npage_child, ncell_t parent_cell, npage_t *npage_child2);
+ 
+ 
++// Ngozi's helper functions
++FILE * chidb_open_file(const char *filename);
++bool chidb_read_header_title(unsigned char *header_bytes);
++bool check_six_header_bytes(unsigned char *header_bytes);
++bool check_byte(unsigned char *header_bytes, int byte_index, unsigned char correct_byte);
++bool run_corrupt_header_checks(unsigned char *header_bytes);
++int get_num_pages(const char *filename, int page_size);
++
+ #endif /*BTREE_H_*/
+diff --git a/tests/check_btree_1a.c b/tests/check_btree_1a.c
+index 6e47cd5..9b3ec61 100644
+--- a/tests/check_btree_1a.c
++++ b/tests/check_btree_1a.c
+@@ -101,4 +101,4 @@ TCase* make_btree_1a_tc(void)
+     tcase_add_test (tc, test_1a_5);
+ 
+     return tc;
+-}
++}
+\ No newline at end of file
