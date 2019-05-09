@@ -43,7 +43,7 @@ use `crtl-c` to exit the chidb shell. If you want to exit the container (your st
 docker attach chidb_sandbox
 ```
 
-## Install check (unfinished)
+## Install check
 Use check for automated tests
 - [from the check documentation](https://libcheck.github.io/check/web/install.html#linuxsource)
 
